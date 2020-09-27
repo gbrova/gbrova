@@ -26,17 +26,17 @@ Or, to phrase it less controversially: all else being equal, it's harder to pret
 
 To illustrate with a short example, consider this snippet:
 
-```
+{% highlight python %}
 assert isinstance(start_time, datetime) and isinstance(end_time, datetime), "Pass datetime objects to 'start_time' and 'end_time'"
-```
+{% endhighlight %}
 
 This line is too long ("ugly"), so Black automatically reformatted it for me:
 
-```
+{% highlight python %}
 assert isinstance(start_time, datetime) and isinstance(
     end_time, datetime
 ), "Pass datetime objects to 'start_time' and 'end_time'"
-```
+{% endhighlight %}
 
 Yuck! Now the line is split up, but in an arbitrary and asymmetric way. My first instinct was to fight the tool or maybe just disable auto-formatting for this line. My second instinct was to try to fix Black: I agree this line is too long and needs to be split up, but Black should pick a _better_ way to split it. I just couldn't find a more natural way to split it.
 
@@ -44,10 +44,10 @@ Taking a step back, I realized the formatting is telling me something else: _thi
 
 The snippet becomes clearer if split into two lines:
 
-```
+{% highlight python %}
 assert isinstance(start_time, datetime), "Pass a datetime object to 'start_time'"
 assert isinstance(end_time, datetime), "Pass a datetime object to 'end_time'"
-```
+{% endhighlight %}
 
 Now, the code for handling start_time and end_time looks the same, so it's clearer at a glance that the two lines are doing basically the same thing[^1]. As a bonus, the error messages are more precise.
 

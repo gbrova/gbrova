@@ -30,13 +30,11 @@ In Python 3, you might write the above approach like this:
 import random
 from itertools import accumulate
 def roll(probs):
-cumulative_weights = list(accumulate(probs))
-position = random.random()
-for side, end_position in enumerate(cumulative_weights):
-if position < end_position:
-return side + 1 # Dice are 1-indexed
-
-# Usage example
+    cumulative_weights = list(accumulate(probs))
+    position = random.random()
+    for side, end_position in enumerate(cumulative_weights):
+        if position < end_position:
+            return side + 1 # Dice are 1-indexed
 
 print(roll([0.1, 0.1, 0.3, 0.5]))
 {% endhighlight %}
@@ -51,14 +49,13 @@ At this stage, most candidates write something like this:
 {% highlight python %}
 import bisect
 def compute_cumulative(probs):
-cumulative_weights = list(accumulate(probs))
-return cumulative_weights
+    cumulative_weights = list(accumulate(probs))
+    return cumulative_weights
 
 def roll(cumulative_weights):
-position = random.random()
-return bisect.bisect(cumulative_weights, position) + 1 # Dice are 1-sided
+    position = random.random()
+    return bisect.bisect(cumulative_weights, position) + 1 # Dice are 1-sided
 
-# Usage example
 
 cumulative = compute_cumulative([0.1, 0.1, 0.3, 0.5])
 print(roll(cumulative))
@@ -73,18 +70,16 @@ The natural object-oriented way to improve this is to introduce a class:
 **Attempt 3**
 {% highlight python %}
 class Dice:
-def **init**(self, probs):
-self.cumulative_probs = self.\_compute_cumulative(probs)
+    def __init__(self, probs):
+        self.cumulative_probs = self._compute_cumulative(probs)
 
-def compute_cumulative(self, probs):
-cumulative_weights = list(accumulate(probs))
-return cumulative_weights
+    def compute_cumulative(self, probs):
+        cumulative_weights = list(accumulate(probs))
+        return cumulative_weights
 
-def roll(self):
-position = random.random()
-return bisect.bisect(self.cumulative_probs, position) + 1 # Dice are 1-sided
-
-# Usage example
+    def roll(self):
+        position = random.random()
+        return bisect.bisect(self.cumulative_probs, position) + 1 # Dice are 1-sided
 
 d = Dice([0.1, 0.1, 0.3, 0.5])
 print(d.roll())
@@ -100,11 +95,10 @@ import bisect
 from itertools import accumulate
 from collections import Counter
 def gen_rolls(probs):
-cum_probs = list(accumulate(probs))
-while True:
-yield bisect.bisect(cum_probs, random.random()) + 1
+    cum_probs = list(accumulate(probs))
+    while True:
+        yield bisect.bisect(cum_probs, random.random()) + 1
 
-# Usage example
 
 rolls = gen_rolls([0.1, 0.1, 0.3, 0.5])
 print(next(rolls))
