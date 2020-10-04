@@ -49,7 +49,7 @@ assert isinstance(start_time, datetime), "Pass a datetime object to 'start_time'
 assert isinstance(end_time, datetime), "Pass a datetime object to 'end_time'"
 {% endhighlight %}
 
-Now, the code for handling start_time and end_time looks the same, so it's clearer at a glance that the two lines are doing basically the same thing[^1]. As a bonus, the error messages are more precise.
+Now, the code for handling start_time and end_time looks the same, so it's clearer at a glance that the two lines are doing basically the same thing[[^1]]. As a bonus, the error messages are more precise.
 
 I came to this realization because the original line was too long, and there was no good natural way to split it. This is a surprisingly deep insight to come from a simple formatting tool!
 
