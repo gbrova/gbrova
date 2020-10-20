@@ -18,7 +18,10 @@ I came across a post on Hacker News about [how routers work](https://kamila.is/t
 - Wireshark is a thing, and it's actually really useful to visualize and debug these things.
 - Building an application server is actually not that hard, and quite educational.
 
-For this post I want to focus on the last bullet point. I spent a couple hours and built a super simple HTTP server in python, that just serves some static content. This was a great way to learn about sockets and what it means to persist connections. I also now understand exactly what HTTP headers are, and I even got to review some multithreading!
+For this post I want to focus on the last bullet point. I spent a couple hours and built a super simple HTTP server [[^very-simple]] in python, that just serves some static content. This was a great way to learn about sockets and what it means to persist connections. I also now understand exactly what HTTP headers are, and I even got to review some multithreading!
+
+[^very-simple]: What I built here is extremely basic and doesn't come anywhere close to implementing the HTTP 1.1 spec.  This [resource](https://www.jmarshall.com/easy/http/#http1.1c2) does a great job explaining the spec if you want a fuller implementation. 
+
 
 ## Let's build an HTTP server!
 
