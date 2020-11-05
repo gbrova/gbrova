@@ -126,6 +126,43 @@ Using the tricks described in this article, we managed to compress Alice in Wond
 That compression and building ML models are related is not a new idea. In fact, the website for the Hutter Prize, an ongoing competition for effective compression of text data, recognizes as much: they are motivated by the observation that "being able to compress well is closely related to acting intelligently." This specific approach wouldn't qualify for the Hutter Prize, because the GPT-2 model is too big. There is some [academic work](https://paperswithcode.com/sota/language-modelling-on-hutter-prize) on using language models to compress text, as well as a [very easy-to-use implementation](https://bellard.org/textsynth/sms.html) (which unfortunately isn't open-sourced). 
 
 
+## Appendix: How do I actually run GPT-2? 
+
+For this project, I used Huggingface Transformers because it lets me easily swap out different trained language models.
+
+Even though the purpose of a language model is to output the next token (singular; only one token), a lot of documentation out there is about language generation (i.e. generate many tokens). Maybe this makes sense considering GPT-2's claim to fame is generating realistic-sounding text given only a short prompt. I found Huggingface's blog article on [generating text](https://huggingface.co/blog/how-to-generate) to be an extremely good introduction to this topic. For our purposes, a good summary is that, if our goal is to generate realistic text, continuously outputting the most-probable next token is just about the _worst_ thing you can do. 
+
+Transformers provides a seemingly very straightforward way to generate text: 
+
+{% highlight python %}
+from transformers import AutoModelWithLMHead, AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained("gpt2")
+model = AutoModelWithLMHead.from_pretrained("gpt2", return_dict=True)
+
+input = "It's a nice place to work with"
+input_ids = tokenizer.encode(ss)
+
+generated = model.generate(input_ids, max_length=len(input_ids[0])+1)
+last_token = generated[0][-1]
+generated_word = tokenizer.decode(last_token)
+{% endhighlight %}
+
+However, this only gives us the most likely last word, and there's no easy way to get `generate` to return multiple samples (though the above article on generating text is great for explaining what the myriad different arguments do). 
+
+Digging through the docs, it turns out we can get the model's next token probabilities: 
+
+{% highlight python %}
+next_token_logits = model.forward(input_ids).logits[:, -1, :]
+
+last_token = torch.argmax(next_token_logits[0])
+generated_word = tokenizer.decode([last_token])
+{% endhighlight %}
+
+However, this is still inefficient because it causes us to rerun the model inference for overlapping sequences.  For example, if we use a history of 20 tokens (i.e. `len(input_ids) == 20`), we would have to call `model(input_ids[0:20])` for the first prediction, `model(input_ids[1:21])` for the second prediction, and so on. To get around this, I had to modify the source code of the `forward` function to iterate through the actual tokens (not generated ones) and return the probability distribution on each pass.
+
+Another practical consideration is batching: the model runs much faster with batches of tokens, rather than taking a single vector of tokens at a time. This is straightforward for compression, as we can split the input linearly into any number of consecutive batches. However batching is not possible for decompression, because we can't decompress later batches without first knowing the preceding text. This means we can either make decompression unbatched (and therefore slower), or have multiple starting points (one starting point for each batch), requiring the model to warm up more times (and therefore achieve a slightly lower compression ratio).
+
 
 ---
 Footnotes:
